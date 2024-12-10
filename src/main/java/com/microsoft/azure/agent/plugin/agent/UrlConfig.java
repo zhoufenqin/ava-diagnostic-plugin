@@ -11,16 +11,8 @@ public class UrlConfig {
         return agentPort;
     }
 
-    public static String getNamespacesUrl() {
-        return "http://localhost:" + agentPort + "/namespaces";
-    }
-
-    public static String getPodsUrl() {
-        return "http://localhost:" + agentPort + "/pods";
-    }
-
-    public static String getContainersUrl() {
-        return "http://localhost:" + agentPort + "/containers";
+    public static String getAttachInfoUrl() {
+        return "http://localhost:" + agentPort + "/attach/info";
     }
 
     public static String getAttachUrl() {

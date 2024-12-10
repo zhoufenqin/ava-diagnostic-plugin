@@ -3,10 +3,17 @@ package com.microsoft.azure.agent.plugin.agent.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microsoft.azure.agent.plugin.agent.UrlConfig;
 import com.microsoft.azure.agent.plugin.agent.entity.PodInfo;
+import io.kubernetes.client.openapi.ApiClient;
+import io.kubernetes.client.openapi.ApiException;
+import io.kubernetes.client.openapi.apis.CoreV1Api;
+import io.kubernetes.client.openapi.models.V1Pod;
+import io.kubernetes.client.openapi.models.V1PodList;
+import io.kubernetes.client.util.Config;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.HttpStatus;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -15,72 +22,98 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class KubernetesService {
 
     public volatile static String defaultPodName = null;
     public volatile static String defaultContainerName = null;
     public volatile static String defaultNamespace = "default";
+    static ApiClient client = null;
+    static CoreV1Api api = null;
 
+    public static void initializeClient() {
+        try {
+            client = Config.defaultClient();
+            io.kubernetes.client.openapi.Configuration.setDefaultApiClient(client);
+            api = new CoreV1Api();
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to initialize Kubernetes client");
+        }
+    }
+
+    public static void resetClient() {
+        client = null;
+        api = null;
+        initializeClient();
+    }
 
     public static List<String> listNamespaces() {
         try {
-            Pair<Integer, String> response = callGetUrl(UrlConfig.getNamespacesUrl());
-            if (response.getKey() == HttpStatus.SC_OK) {
-                ObjectMapper objectMapper = new ObjectMapper();
-                // Parse the JSON array string into a List<String>
-                return objectMapper.readValue(response.getValue().trim(), List.class);
-            }
+            List<String> namespaces = api.listNamespace(null, null, null, null, null, null, null, null, null, null, null).getItems().stream().map(n -> n.getMetadata().getName()).toList();
+            return namespaces;
         } catch (Exception e) {
-            e.printStackTrace();
-            return List.of();
+            System.out.println("error + " + e.getMessage());
+            return new ArrayList<String>();
         }
-        return List.of();
     }
 
     public static List<PodInfo> getAllPods() throws Exception {
-
         try {
-            Pair<Integer, String> response = callGetUrl(UrlConfig.getPodsUrl() + "?namespace=" + defaultNamespace);
+            List<PodInfo> podList = new ArrayList<>();
+            V1PodList pods = getPods(defaultNamespace);
+            if (pods == null) {
+                return podList;
+            }
+            List<String> attachInfo = getAttachInfo();
+            Map<String, String> attachMap = attachInfo.stream()
+                    .map(info -> info.split(" "))
+                    .collect(Collectors.toMap(parts -> parts[0], parts -> parts[1]));
+
+            for (V1Pod pod : pods.getItems()) {
+                String podName = pod.getMetadata().getName();
+                String podIP = pod.getStatus().getPodIP();
+                String podPhase = pod.getStatus().getPhase();
+                String isAttach = attachMap.getOrDefault(podName, "Unknown");
+
+                podList.add(new PodInfo(podName, podIP, podPhase, isAttach));
+            }
+            return podList;
+        } catch (Exception e) {
+            System.out.println("error + " + e.getMessage());
+            return new ArrayList<PodInfo>();
+        }
+    }
+
+    private static List<String> getAttachInfo() {
+        try {
+            Pair<Integer, String> response = callGetUrl(UrlConfig.getAttachInfoUrl() + "?namespace=" + defaultNamespace, 10000);
             if (response.getKey() == HttpStatus.SC_OK) {
                 ObjectMapper objectMapper = new ObjectMapper();
-                // Parse the JSON array string into a List<String>
-                List<String> podStrings = objectMapper.readValue(response.getValue().trim(), List.class);
-                // Convert each string into a PodInfo object
-                List<PodInfo> pods = new ArrayList<>();
-                for (String podString : podStrings) {
-                    String[] parts = podString.split(" ");
-                    if (parts.length >= 4) {
-                        String name = parts[0];    // Pod name
-                        String ip = parts[1];      // Pod IP
-                        String status = parts[2];  // Pod status
-                        boolean isAttach = Boolean.parseBoolean(parts[3]);
-                        pods.add(new PodInfo(name, ip, status, isAttach));
-                    }
-                }
-                return pods;
+                return objectMapper.readValue(response.getValue().trim(), List.class);
             }
+            System.err.println("Failed to get attach info: " + response.getValue());
+
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println("Error occurred while getting attach info: " + e);
         }
-        return new ArrayList<>();
+        return new ArrayList<String>();
     }
 
     public static List<String> getContainerNames(String podName) {
-        String url = UrlConfig.getContainersUrl() +"?podName=" + podName + "&namespace=" + defaultNamespace;
         try {
-            Pair<Integer, String> response = callGetUrl(url);
-            if (response.getKey() == HttpStatus.SC_OK) {
-                ObjectMapper objectMapper = new ObjectMapper();
-                // Parse the JSON array string into a List<String>
-                return objectMapper.readValue(response.getValue().trim(), List.class);
+            V1Pod pod = getPodByName(podName, defaultNamespace);
+            if (pod == null) {
+                return new ArrayList<String>();
             }
+            return pod.getSpec().getContainers().stream().map(c -> c.getName()).toList();
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("failed to get containers");
+            System.out.println("error + " + e.getMessage());
+            return new ArrayList<String>();
         }
-        return List.of();
     }
+
 
     public static boolean attachAgent(String podName, String containerName) throws Exception {
         String requestBody = "{"
@@ -132,12 +165,12 @@ public class KubernetesService {
         throw new RuntimeException(response.getValue());
     }
 
-    private static Pair<Integer, String> callGetUrl(String url) {
+    private static Pair<Integer, String> callGetUrl(String url, int timeout) {
         try {
             java.net.URL obj = new java.net.URL(url);
             java.net.HttpURLConnection con = (java.net.HttpURLConnection) obj.openConnection();
-            con.setReadTimeout(3000);
-            con.setConnectTimeout(3000);
+            con.setReadTimeout(timeout);
+            con.setConnectTimeout(timeout);
             con.setRequestMethod("GET");
             int responseCode = con.getResponseCode();
             // Determine the correct stream to read based on response code
@@ -216,5 +249,33 @@ public class KubernetesService {
         } catch (Exception e) {
             throw new RuntimeException( "Error occurred: " + e.getMessage());
         }
+    }
+
+    private static V1PodList getPods(String namespace) {
+        try {
+            V1PodList podList = api.listNamespacedPod(namespace, null, null, null, null, null, null, null, null, null, null, null);
+            return podList;
+        } catch (ApiException e) {
+            System.err.println("ApiException when calling Kubernetes API: " + e.getResponseBody());
+        } catch (Exception e) {
+            System.err.println("Exception when initializing Kubernetes client: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private static V1Pod getPodByName(String name, String namespace) {
+        try {
+            V1Pod pod = api.readNamespacedPod(name, namespace, null);
+            return pod;
+
+        } catch (ApiException e) {
+            System.err.println("ApiException when calling Kubernetes API: " + e.getResponseBody() + " podName: " + name + " namespace: " + namespace);
+            e.printStackTrace();
+        } catch (Exception e) {
+            System.err.println("Exception when initializing Kubernetes client: " + e.getMessage() + " podName: " + name + " namespace: " + namespace);
+            e.printStackTrace();
+        }
+        return null;
     }
 }

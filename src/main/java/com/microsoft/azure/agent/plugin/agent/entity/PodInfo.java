@@ -4,9 +4,9 @@ public class PodInfo {
     private String name;
     private String podIp;
     private String phase;
-    private boolean isAttach;
+    private String isAttach;
 
-    public PodInfo(String name, String podIp, String phase, boolean isAttach) {
+    public PodInfo(String name, String podIp, String phase, String isAttach) {
         this.name = name;
         this.podIp = podIp;
         this.phase = phase;
@@ -25,7 +25,7 @@ public class PodInfo {
         return phase;
     }
 
-    public boolean isAttach() {
+    public String isAttach() {
         return isAttach;
     }
 }

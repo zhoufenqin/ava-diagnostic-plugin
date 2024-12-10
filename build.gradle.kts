@@ -5,10 +5,14 @@ plugins {
 }
 
 group = "com.microsoft.azure.agent.plugin"
-version = "1.0-SNAPSHOT"
+version = "1.0.2-SNAPSHOT"
 
 repositories {
   mavenCentral()
+}
+
+dependencies {
+  implementation("io.kubernetes:client-java:19.0.1")
 }
 
 // Configure Gradle IntelliJ Plugin

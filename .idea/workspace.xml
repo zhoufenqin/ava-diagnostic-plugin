@@ -5,11 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9a7ccef5-855e-47dc-950e-37f3913f083e" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/microsoft/azure/agent/plugin/agent/UrlConfig.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/microsoft/azure/agent/plugin/agent/MyToolWindowFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microsoft/azure/agent/plugin/agent/MyToolWindowFactory.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/microsoft/azure/agent/plugin/agent/RemoveLogActionClass.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microsoft/azure/agent/plugin/agent/RemoveLogActionClass.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/microsoft/azure/agent/plugin/agent/service/KubernetesService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/microsoft/azure/agent/plugin/agent/service/KubernetesService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -41,6 +38,11 @@
               <path>
                 <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
                 <item name="AgentPlugin" type="f1a62948:ProjectNode" />
+                <item name="Dependencies" type="6de06a37:ExternalSystemViewDefaultContributor$MyDependenciesNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="AgentPlugin" type="f1a62948:ProjectNode" />
                 <item name="Run Configurations" type="7b0102dc:RunConfigurationsNode" />
               </path>
             </expand>
@@ -59,6 +61,7 @@
     </option>
   </component>
   <component name="Git.Settings">
+    <branch-grouping />
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="LogFilters">
@@ -77,39 +80,45 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Gradle.AgentPlugin [buildPlugin].executor": "Debug",
-    "Gradle.AgentPlugin [build].executor": "Run",
-    "Gradle.AgentPlugin [clean].executor": "Run",
-    "Gradle.AgentPlugin [setupDependencies].executor": "Run",
-    "Gradle.Build AgentPlugin.executor": "Run",
-    "Gradle.Run Plugin.executor": "Debug",
-    "Kotlin script (Beta).build.gradle.kts.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "master",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "D:/code/github/arthas-idea-plugin",
-    "project.structure.last.edited": "SDKs",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "editor.preferences.completion"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Gradle.AgentPlugin [buildPlugin].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.AgentPlugin [build].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.AgentPlugin [clean].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.AgentPlugin [setupDependencies].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.Build AgentPlugin.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.Run Plugin.executor&quot;: &quot;Debug&quot;,
+    &quot;Kotlin script (Beta).build.gradle.kts.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/code/zhoufenqin/AgentPlugin/build/distributions/AgentPlugin-1.0-SNAPSHOT.zip&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;SDKs&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
   },
-  "keyToStringList": {
-    "kotlin-gradle-user-dirs": [
-      "C:\\Users\\fenzho\\.gradle"
+  &quot;keyToStringList&quot;: {
+    &quot;kotlin-gradle-user-dirs&quot;: [
+      &quot;C:\\Users\\fenzho\\.gradle&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\code\zhoufenqin\AgentPlugin\src\main\resources\META-INF" />
+      <recent name="D:\code\zhoufenqin\AgentPlugin\src\main\java\com\microsoft\azure\agent\plugin\agent\images" />
       <recent name="D:\code\zhoufenqin\AgentPlugin" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\code\zhoufenqin\AgentPlugin\doc\images" />
+      <recent name="D:\code\zhoufenqin\AgentPlugin\src\main\resources\images" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
       <recent name="com.microsoft.azure.agent.plugin.agent" />
     </key>
   </component>
-  <component name="RunManager" selected="Gradle.Run Plugin">
+  <component name="RunManager" selected="Gradle.AgentPlugin [buildPlugin]">
     <configuration default="true" type="AZURE_FUNCTION_SUPPORT" factoryName="Run Functions">
       <option name="appName" />
       <option name="appServicePlanName" />
@@ -216,8 +225,8 @@
     <recent_temporary>
       <list>
         <item itemvalue="Gradle.AgentPlugin [buildPlugin]" />
-        <item itemvalue="Gradle.AgentPlugin [build]" />
         <item itemvalue="Gradle.AgentPlugin [clean]" />
+        <item itemvalue="Gradle.AgentPlugin [build]" />
         <item itemvalue="Gradle.AgentPlugin [buildPlugin]" />
         <item itemvalue="Gradle.AgentPlugin [buildPlugin]" />
       </list>
@@ -246,7 +255,19 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="HEAD" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
           </value>
         </entry>
       </map>
@@ -257,68 +278,58 @@
       <breakpoints>
         <line-breakpoint type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/microsoft/azure/agent/plugin/agent/service/KubernetesService.java</url>
-          <line>79</line>
-          <option name="timeStamp" value="12" />
-        </line-breakpoint>
-        <line-breakpoint type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/microsoft/azure/agent/plugin/agent/service/KubernetesService.java</url>
-          <line>193</line>
+          <line>219</line>
           <option name="timeStamp" value="18" />
         </line-breakpoint>
         <line-breakpoint type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/microsoft/azure/agent/plugin/agent/service/KubernetesService.java</url>
-          <line>223</line>
+          <line>249</line>
           <option name="timeStamp" value="19" />
         </line-breakpoint>
         <line-breakpoint type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/microsoft/azure/agent/plugin/agent/service/KubernetesService.java</url>
-          <line>208</line>
+          <line>234</line>
           <option name="timeStamp" value="20" />
         </line-breakpoint>
         <line-breakpoint type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/microsoft/azure/agent/plugin/agent/service/KubernetesService.java</url>
-          <line>218</line>
+          <line>244</line>
           <option name="timeStamp" value="21" />
         </line-breakpoint>
         <line-breakpoint type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/microsoft/azure/agent/plugin/agent/service/KubernetesService.java</url>
-          <line>196</line>
+          <line>222</line>
           <option name="timeStamp" value="23" />
         </line-breakpoint>
         <line-breakpoint type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/microsoft/azure/agent/plugin/agent/service/KubernetesService.java</url>
-          <line>186</line>
+          <line>212</line>
           <option name="timeStamp" value="24" />
         </line-breakpoint>
         <line-breakpoint type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/microsoft/azure/agent/plugin/agent/service/KubernetesService.java</url>
-          <line>192</line>
+          <line>218</line>
           <option name="timeStamp" value="25" />
         </line-breakpoint>
         <line-breakpoint type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/microsoft/azure/agent/plugin/agent/MyToolWindowFactory.java</url>
-          <line>317</line>
+          <line>356</line>
           <option name="timeStamp" value="27" />
         </line-breakpoint>
         <line-breakpoint type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/microsoft/azure/agent/plugin/agent/MyToolWindowFactory.java</url>
-          <line>328</line>
+          <line>367</line>
           <option name="timeStamp" value="31" />
         </line-breakpoint>
         <line-breakpoint type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/microsoft/azure/agent/plugin/agent/MyToolWindowFactory.java</url>
-          <line>327</line>
+          <line>366</line>
           <option name="timeStamp" value="32" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
+        <line-breakpoint type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/microsoft/azure/agent/plugin/agent/service/KubernetesService.java</url>
-          <line>92</line>
+          <line>118</line>
           <option name="timeStamp" value="36" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/microsoft/azure/agent/plugin/agent/service/KubernetesService.java</url>
-          <line>99</line>
-          <option name="timeStamp" value="37" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

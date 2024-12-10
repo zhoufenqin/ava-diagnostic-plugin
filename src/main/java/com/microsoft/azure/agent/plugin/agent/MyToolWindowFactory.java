@@ -4,6 +4,8 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
+import com.intellij.openapi.wm.ToolWindowManager;
+import com.intellij.openapi.wm.ex.ToolWindowManagerListener;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.components.JBTextField;
@@ -21,6 +23,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.net.Socket;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -32,8 +35,10 @@ public class MyToolWindowFactory implements ToolWindowFactory {
     private JLabel defaultPodInfoLabel;
     private JComboBox<String> namespaceComboBox;
     private JBTextField portField;
+    private JLabel statusMessage;
     @Override
     public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
+        KubernetesService.initializeClient();
         // Create a main panel
         panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -48,6 +53,18 @@ public class MyToolWindowFactory implements ToolWindowFactory {
         ContentFactory contentFactory = ContentFactory.getInstance();
         Content content = contentFactory.createContent(panel, "", false);
         toolWindow.getContentManager().addContent(content);
+
+        project.getMessageBus().connect().subscribe(ToolWindowManagerListener.TOPIC, new ToolWindowManagerListener() {
+            @Override
+            public void stateChanged(@NotNull ToolWindowManager toolWindowManager) {
+                if (toolWindow.isVisible()) {
+                    // When expanded, recheck the port status
+                    String portText = portField.getText().trim();
+                    String message = getForwardPortMessage(portText);
+                    statusMessage.setText(message);
+                }
+            }
+        });
     }
 
     private void addWelcomeLabel() {
@@ -74,13 +91,19 @@ public class MyToolWindowFactory implements ToolWindowFactory {
         JLabel portLabel = new JLabel("Agent port-forward port:");
         portLabel.setFont(new Font(portLabel.getFont().getName(), Font.PLAIN, 14));
 
-        JBTextField portField = new JBTextField(UrlConfig.getAgentPort()); // Default value
+        portField = new JBTextField(UrlConfig.getAgentPort()); // Default value
         portField.setMaximumSize(new Dimension(100, 30));
-        portField.setPreferredSize(new Dimension(100, 30));
+
+        statusMessage = new JLabel();
+        statusMessage.setForeground(JBColor.RED);
+        statusMessage.setPreferredSize(new Dimension(100, 30));
+        statusMessage.setText(getForwardPortMessage(portField.getText().trim()));
 
         portPanel.add(portLabel);
         portPanel.add(Box.createRigidArea(new Dimension(10, 0)));
         portPanel.add(portField);
+        portPanel.add(Box.createRigidArea(new Dimension(10, 0)));
+        portPanel.add(statusMessage);
 
         panel.add(portPanel);
         // Add a listener to monitor changes
@@ -101,8 +124,14 @@ public class MyToolWindowFactory implements ToolWindowFactory {
             }
 
             private void updatePortValue() {
-                UrlConfig.setAgentPort(portField.getText().trim());
-                refreshNamespaces();
+                String portText = portField.getText().trim();
+                UrlConfig.setAgentPort(portText);
+                try {
+                    statusMessage.setText(getForwardPortMessage(portText));
+                    UrlConfig.setAgentPort(portText);
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(panel, "Please enter a valid port number.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
             }
         });
     }
@@ -130,7 +159,15 @@ public class MyToolWindowFactory implements ToolWindowFactory {
         for (String namespace : namespaces) {
             namespaceComboBox.addItem(namespace);
         }
-
+        try {
+            if (isPortOpen("localhost", Integer.parseInt(portField.getText().trim()))) {
+                KubernetesService.defaultNamespace = (String) namespaceComboBox.getSelectedItem();
+                loadPods();
+            }
+        } catch (Exception e) {
+            // ignore
+            e.printStackTrace();
+        }
         // Add action listener to namespace selection
         namespaceComboBox.addActionListener(e -> {
             String selectedNamespace = (String) namespaceComboBox.getSelectedItem();
@@ -279,6 +316,7 @@ public class MyToolWindowFactory implements ToolWindowFactory {
 
         // Action listener to refresh namespaces and then reload pods based on the selected namespace
         button.addActionListener(e -> {
+            KubernetesService.resetClient();
             refreshNamespaces(); // Step 1: Refresh namespaces
             String selectedNamespace = (String) namespaceComboBox.getSelectedItem();
             if (selectedNamespace != null && !selectedNamespace.isEmpty()) {
@@ -349,4 +387,17 @@ public class MyToolWindowFactory implements ToolWindowFactory {
         KubernetesService.defaultPodName = podName;
         KubernetesService.defaultContainerName = selectedContainer;
     }
+
+    private static String getForwardPortMessage(String port) {
+        return isPortOpen("localhost", Integer.valueOf(port)) ? "" : "Port closed! Check or re-enter.";
+    }
+
+    private static boolean isPortOpen(String host, int port) {
+        try (Socket socket = new Socket(host, port)) {
+            return true; // Port is open
+        } catch (Exception e) {
+            return false; // Port is closed
+        }
+    }
+
 }
