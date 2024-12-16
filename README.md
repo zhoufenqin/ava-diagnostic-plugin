@@ -8,12 +8,13 @@
 ## How to use
 ### [Prerequisites](#prerequisites)
   - install the plugin
-  - TODO: (link to diag4j install doc)
+  - install [diag4j](https://github.com/microsoft/diag4j) in Your Cluster
   - Run `kubectl port-forward svc/diag4j-agent-service {port}:8080` in local, once the port determined, configure it in plugin, the default port is 8081
     (TODO: update it when agent service is add in diag4j)
 ### Agent Overview Dashboard
-  - you can configure your port which forward to the agent service in local 
+  - you can configure your port which forward to the agent service in local
   - the pods show in the table are listed with kubeconfig in local environment
+
     ![Agent Overview](doc/images/overview.png)
 ### Attach Agent
   - click the pod you want to attach the agent and select the container, only one container in the pod can be attached
