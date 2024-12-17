@@ -50,6 +50,21 @@ intellijPlatform {
         untilBuild = provider { null }
     }
   }
+
+  publishing {
+    token = providers.gradleProperty("jetBrainsToken")
+    channels = providers.gradleProperty("jetBrainsChannel").map { listOf(it) }
+  }
+
+  pluginVerification {
+    ides {
+      ide(IntelliJPlatformType.IntellijIdeaUltimate, ideaVersion)
+    }
+    freeArgs = listOf(
+      "-mute",
+      "TemplateWordInPluginId,TemplateWordInPluginName"
+    )
+  }
 }
 
 tasks {
